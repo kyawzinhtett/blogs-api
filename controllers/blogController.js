@@ -51,7 +51,18 @@ const updatePost = async (req, res) => {
 };
 
 const deletePost = async (req, res) => {
-  res.send('Delete Post');
+  const {
+    user: { userID },
+    params: { id: postID },
+  } = req;
+
+  const post = await Blog.findOneAndRemove({ _id: postID, author: userID });
+
+  if (!post) {
+    throw new NotFoundError(`No post found with this id: ${postID}`);
+  }
+
+  res.status(StatusCodes.NO_CONTENT).send();
 };
 
 module.exports = { getALLPosts, getPost, createPost, updatePost, deletePost };
