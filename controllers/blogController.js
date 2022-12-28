@@ -7,7 +7,13 @@ const getALLPosts = async (req, res) => {
 };
 
 const getPost = async (req, res) => {
-  res.send('Get Single Post');
+  const {
+    user: { userID },
+    params: { id: postID },
+  } = req;
+
+  const post = await Blog.findOne({ _id: postID, author: userID });
+  res.status(StatusCodes.OK).json({ post });
 };
 
 const createPost = async (req, res) => {
