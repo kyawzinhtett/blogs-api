@@ -4,6 +4,9 @@ require('express-async-errors');
 const connectDB = require('./db/connectDB');
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
+const authenticateUser = require('./middleware/authentication');
+const authRouter = require('./routes/auth');
+const blogRouter = require('./routes/blog');
 
 connectDB();
 const app = express();
@@ -13,8 +16,8 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 // Routes
-app.use('/api/v1/auth', require('./routes/auth'));
-app.use('/api/v1/blogs', require('./routes/blog'));
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/blogs', authenticateUser, blogRouter);
 
 // Error Handler
 app.use(notFound);
