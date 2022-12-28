@@ -2,7 +2,8 @@ const { StatusCodes } = require('http-status-codes');
 const Blog = require('../models/Blog');
 
 const getALLPosts = async (req, res) => {
-  res.send('Get All Posts');
+  const posts = await Blog.find({ author: req.user.userID }).sort('-createdAt');
+  res.status(StatusCodes.OK).json({ count: posts.length, posts });
 };
 
 const getPost = async (req, res) => {
