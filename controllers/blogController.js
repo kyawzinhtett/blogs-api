@@ -1,5 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const Blog = require('../models/Blog');
+const { BadRequestError, NotFoundError } = require('../errors');
 
 const getALLPosts = async (req, res) => {
   const posts = await Blog.find({ author: req.user.userID }).sort('-createdAt');
@@ -13,6 +14,9 @@ const getPost = async (req, res) => {
   } = req;
 
   const post = await Blog.findOne({ _id: postID, author: userID });
+  if (!post) {
+    throw new NotFoundError(`No post found with this id: ${postID}`);
+  }
   res.status(StatusCodes.OK).json({ post });
 };
 
@@ -23,7 +27,27 @@ const createPost = async (req, res) => {
 };
 
 const updatePost = async (req, res) => {
-  res.send('Update Post');
+  const {
+    body: { title, description },
+    user: { userID },
+    params: { id: postID },
+  } = req;
+
+  if (!title || !description) {
+    throw new BadRequestError('Title or description cannot be empty');
+  }
+
+  const post = await Blog.findOneAndUpdate(
+    { _id: postID, author: userID },
+    req.body,
+    { new: true, runValidators: true }
+  );
+
+  if (!post) {
+    throw new NotFoundError(`No post found with this id: ${postID}`);
+  }
+
+  res.status(StatusCodes.OK).json({ post });
 };
 
 const deletePost = async (req, res) => {
