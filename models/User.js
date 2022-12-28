@@ -3,24 +3,27 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const UserSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Please provide username'],
-    minLength: 3,
+const UserSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'Please provide username'],
+      minLength: 3,
+    },
+    email: {
+      type: String,
+      required: [true, 'Please provide email'],
+      unique: true,
+      validate: [validator.isEmail, 'Invalid email'],
+    },
+    password: {
+      type: String,
+      required: [true, 'Please provide password'],
+      minLength: 6,
+    },
   },
-  email: {
-    type: String,
-    required: [true, 'Please provide email'],
-    unique: true,
-    validate: [validator.isEmail, 'Invalid email'],
-  },
-  password: {
-    type: String,
-    required: [true, 'Please provide password'],
-    minLength: 6,
-  },
-});
+  { timestamps: true }
+);
 
 // Hashed Password
 UserSchema.pre('save', async function () {
